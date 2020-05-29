@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <script>
+
+        function formatInput(e) {
+            let element = document.getElementById(e.id);
+            forbidNonNumericChars();
+            document.getElementById(e.id).value = addCommas(element);
+        }
+
+        function forbidNonNumericChars() {
+            let number = document.getElementById('amount');
+            number.onkeydown = function (e) {
+                if (!((e.keyCode > 95 && e.keyCode < 106)
+                    || (e.keyCode > 47 && e.keyCode < 58)
+                    || e.keyCode === 8
+                    || e.keyCode === 108
+                    || e.keyCode === 110
+                    || e.keyCode === 190)) {
+                    return false;
+                }
+                if ((number.value.split(".").length) > 1 && (e.keyCode === 108
+                    || e.keyCode === 110
+                    || e.keyCode === 190)) {
+                    return false;
+                }
+            }
+        }
+
+        function removeTrailingZeros(finalVal) {
+            finalVal = finalVal.replace(/^0+/, '');
+            return finalVal;
+        }
+
+        function addCommas(ele) {
+            ele = ele.value.split(',').join('');
+            return ele.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function eliminateCommas(e) {
+            let ele = document.getElementById(e).value;
+            let finalVal = ele.replace(/^0+(\d)|(\d)0+$/gm, '$1$2');
+            finalVal = finalVal.split(',',).join('');
+            finalVal = finalVal.split('-',).join('');
+            document.getElementById(e).value = finalVal;
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
+<div class="jumbotron jumbotron-fluid" style="background-color:darkcyan">
+    <div class="container">
+        <h1 class="display-4" style="color:lightgray; padding-bottom: 50px">Currency converter</h1>
+    </div>
+    <div class="container">
+        <div class="col-md-16 order-md-1">
+            <form name="form-inline" th:action="@{/convert}" th:object="${currenciesList}" method="get">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <input type="text" maxlength="16" id="amount" th:name="amount" required value="1"
+                               class="form-control h-100"
+                               placeholder="Amount"
+                               style="font-size: x-large; font-weight: bold"
+                               onkeyup="formatInput(this)">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-control custom-select d-block h-100 w-100" th:name="code1">
+                            <option th:text="Euro" th:value="EUR"></option>
+                            <option th:each="currency : ${currenciesList}" th:value="${currency.code}"
+                                    th:text="${currency.code} + ' - ' + ${currency.currencyName}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-control custom-select d-block h-100 w-100" th:name="code2">
+                            <option th:text="Euro" th:value="EUR"></option>
+                            <option th:each="currency : ${currenciesList}" th:value="${currency.code}"
+                                    th:text="${currency.code} + ' - ' + ${currency.currencyName}">
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label></label>
+                        <button onclick="eliminateCommas('amount')" class="btn button" type="submit" style="padding-bottom: 14px; background-color: #343a40; color: white;">Convert
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <hr class="mb-4">
+        </div>
+        <div class="container">
+            <div th:if="${currencies != null}" style="width: 50%; margin: 0 auto;">
+                <div th:if="${currencyFrom} == ${currencyTo}" style="width: 50%; margin: 0 auto;">
+                    <p class="h4"
+                       th:text="${currencyFrom.code} + ' ' + ${#numbers.formatDecimal(amount, 1, 'COMMA', 4, 'POINT')} + ' = '"
+                       style="color:lightgray; text-align: center"></p>
+                    <p class="h1"
+                       th:text="${currencyTo.code} + ' ' + ${#numbers.formatDecimal(amount, 1, 'COMMA', 4, 'POINT')}"
+                       style="color:lightgray; font-size: 60px; text-align: center"></p>
+                    <div th:if="${currencyTo.code} != EUR">
+                        <p class="h5"
+                           th:text="'1 EUR = ' + ${currencyTo.code} + ' ' + ${currencyTo.value}"
+                           style="color:lightgray; text-align: center"></p>
+                        <p th:text="'last updated on ' + ${currencyTo.updatedOn} + ' Eastern European Time (EET)'"
+                           style="color:lightgray; text-align: right"></p>
+                    </div>
+                    <div th:unless="${currencyTo.code} != EUR">
+                        <p class="h5"
+                           th:text="'1 EUR = ' + ${currencyFrom.code} + ' ' + ${currencyFrom.value}"
+                           style="color:lightgray; text-align: center"></p>
+                        <p th:text="'last updated on ' + ${currencyFrom.updatedOn} + ' Eastern European Time (EET)'"
+                           style="color:lightgray; text-align: right"></p>
+                    </div>
+                </div>
+                <p class="h4"
+                   th:text="${currencyFrom.code} + ' ' + ${#numbers.formatDecimal(amount, 1, 'COMMA', 4, 'POINT')} + ' = '"
+                   style="color:lightgray; text-align: center"></p>
+                <p class="h1"
+                   th:text="${currencyTo.code} + ' ' + ${#numbers.formatDecimal(currencies, 1, 'COMMA', 4, 'POINT')}"
+                   style="color:lightgray; font-size: 60px; text-align: center"></p>
+                <div th:if="${currencyTo.code} != EUR">
+                    <p class="h5"
+                       th:text="'1 EUR = ' + ${currencyTo.code} + ' ' + ${currencyTo.value}"
+                       style="color:lightgray; text-align: center"></p>
+                    <p th:text="'last updated on ' + ${currencyTo.updatedOn} + ' Eastern European Time (EET)'"
+                       style="color:lightgray; text-align: right"></p>
+                </div>
+                <div th:unless="${currencyTo.code} != EUR">
+                    <p class="h5"
+                       th:text="'1 EUR = ' + ${currencyFrom.code} + ' ' + ${currencyFrom.value}"
+                       style="color:lightgray; text-align: center"></p>
+                    <p th:text="'last updated on ' + ${currencyFrom.updatedOn} + ' Eastern European Time (EET)'"
+                       style="color:lightgray; text-align: right"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3" th:each="currency : ${currenciesList}">
+            <div th:if="${currency.code} != EUR">
+                <img style="max-height:40px; max-width:40px; overflow: hidden" th:src="${currency.picture}" alt="image"
+                     src="">
+                <span th:value="${currency.code}"
+                      th:text="${currency.code}"></span>
+                <span style="font-weight: bold" th:value="${currency.value}" th:text="${currency.value}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+</div>
+<footer class="footer" style="position: absolute">
+    <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
+</body>
+</html>
