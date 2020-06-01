@@ -85,10 +85,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     private boolean returnAmount(String amount, String code1, String code2) {
-        if (code1.equalsIgnoreCase(code2)) {
-            return true;
-        }
-        return false;
+        return code1.equalsIgnoreCase(code2);
     }
 
     private ArrayList<String> getDailyExchangeRates() {

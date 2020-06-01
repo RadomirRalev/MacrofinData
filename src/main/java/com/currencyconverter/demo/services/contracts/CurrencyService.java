@@ -1,9 +1,6 @@
 package com.currencyconverter.demo.services.contracts;
 
 import com.currencyconverter.demo.models.Currency;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public interface CurrencyService {

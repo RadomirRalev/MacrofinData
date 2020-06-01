@@ -3,7 +3,6 @@ package com.currencyconverter.demo.controllers.mvccontrollers.currency;
 import com.currencyconverter.demo.models.Currency;
 import com.currencyconverter.demo.services.contracts.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +13,6 @@ import java.util.List;
 @Controller
 public class CurrencyMVC {
     private CurrencyService currencyService;
-    private ErrorAttributes errorAttributes;
-
 
     @Autowired
     public CurrencyMVC(CurrencyService currencyService) {
