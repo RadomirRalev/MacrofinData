@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.controllers.restcontrollers;
+package com.currencyconverter.demo.exceptions;
 
 import com.currencyconverter.demo.exceptions.ExceptionResponse;
 import com.currencyconverter.demo.exceptions.BadParameterException;

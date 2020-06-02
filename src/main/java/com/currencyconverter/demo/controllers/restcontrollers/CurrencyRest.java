@@ -43,7 +43,7 @@ public class CurrencyRest {
 
     @GetMapping("/getpairbyid")
     public Currency[] getPairById(@RequestParam String id1,
-                              @RequestParam String id2) {
+                                  @RequestParam String id2) {
         int idNumber1 = processIdPathVariable(id1);
         int idNumber2 = processIdPathVariable(id2);
         try {
@@ -55,7 +55,7 @@ public class CurrencyRest {
 
     @GetMapping("/getpairbycode")
     public Currency[] getPairByCode(@RequestParam String code1,
-                              @RequestParam String code2) {
+                                    @RequestParam String code2) {
         checkIfCodePathVariableIsCorrect(code1);
         checkIfCodePathVariableIsCorrect(code2);
         try {
@@ -103,7 +103,8 @@ public class CurrencyRest {
         }
     }
 
-    @GetMapping(value = "/updaterecords",
+    @RequestMapping(value = "/updaterecords",
+            method = {RequestMethod.GET, RequestMethod.POST},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateRecords() {
         try {

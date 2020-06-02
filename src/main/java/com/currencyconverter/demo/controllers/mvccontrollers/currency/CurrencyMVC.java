@@ -38,13 +38,6 @@ public class CurrencyMVC {
         model.addAttribute("currencyTo", currencyService.getByCode(code2));
         model.addAttribute("currenciesList", currenciesList);
         model.addAttribute("currencies", result);
-        return "convert";
-    }
-
-    @GetMapping("/convert1")
-    public String testCur(Model model) {
-        List<Currency> currenciesList = currencyService.getAllCurrencies();
-        model.addAttribute("currenciesList", currenciesList);
-        return "convert";
+        return "index";
     }
 }
