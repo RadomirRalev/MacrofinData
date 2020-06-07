@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.currencyconverter.demo.controllers.parameterValidityChecker.checkIfAmountIsCorrect;
+import static com.currencyconverter.demo.constants.ControllerConstants.*;
+import static com.currencyconverter.demo.controllers.ParameterValidityChecker.checkIfAmountIsCorrect;
 
 @Controller
 public class CurrencyMVC {
@@ -21,7 +22,7 @@ public class CurrencyMVC {
         this.currencyService = currencyService;
     }
 
-    @GetMapping("/convert")
+    @GetMapping(CONVERT_PAGE_NAME)
     public String convertCurrency(@RequestParam String amount,
                                   @RequestParam String code1,
                                   @RequestParam String code2,
@@ -30,16 +31,16 @@ public class CurrencyMVC {
         List<Currency> currenciesList = currencyService.getAllCurrencies();
         String result = getConversionResult(amount, code1, code2);
         addAttributesToConvertModel(amount, code1, code2, model, currenciesList, result);
-        return "index";
+        return HOME_INDEX_PAGE_NAME;
     }
 
     private String getConversionResult(@RequestParam String amount,
                                        @RequestParam String code1,
                                        @RequestParam String code2) {
         String result;
-        if (code1.equalsIgnoreCase("eur")) {
+        if (code1.equalsIgnoreCase(CONVERT_EURO)) {
             result = currencyService.getEuroToCurrencyByCode(amount, code2);
-        } else if (code2.equalsIgnoreCase("eur")) {
+        } else if (code2.equalsIgnoreCase(CONVERT_EURO)) {
             result = currencyService.getCurrencyToEuroByCode(amount, code1);
         } else {
             result = currencyService.getCurrencyToCurrencyByCode(amount, code1, code2);
@@ -53,10 +54,10 @@ public class CurrencyMVC {
                                              Model model,
                                              List<Currency> currenciesList,
                                              String result) {
-        model.addAttribute("amount", amount);
-        model.addAttribute("currencyFrom", currencyService.getByCode(code1));
-        model.addAttribute("currencyTo", currencyService.getByCode(code2));
-        model.addAttribute("currenciesList", currenciesList);
-        model.addAttribute("currencies", result);
+        model.addAttribute(CONVERT_AMOUNT, amount);
+        model.addAttribute(CONVERT_CURRENCY_FROM, currencyService.getByCode(code1));
+        model.addAttribute(CONVERT_CURRENCY_TO, currencyService.getByCode(code2));
+        model.addAttribute(CONVERT_CURRENCIES_LIST, currenciesList);
+        model.addAttribute(CONVERT_CURRENCIES, result);
     }
 }

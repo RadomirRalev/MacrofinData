@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static com.currencyconverter.demo.constants.ConfigurationConstants.*;
+
 @Configuration
 @EnableTransactionManagement
-@PropertySource(value = "classpath:application.properties")
+@PropertySource(value = HIBERNATE_PROPERTY_SOURCE)
 public class HibernateConfig {
     private String dbUrl;
     private String dbUserName;
@@ -22,16 +24,16 @@ public class HibernateConfig {
 
     @Autowired
     public HibernateConfig(Environment env) {
-        dbUrl = env.getProperty("database.url");
-        dbUserName = env.getProperty("database.username");
-        dbPassword = env.getProperty("database.password");
+        dbUrl = env.getProperty(HIBERNATE_DATABASE_URL);
+        dbUserName = env.getProperty(HIBERNATE_DATABASE_USERNAME);
+        dbPassword = env.getProperty(HIBERNATE_DATABASE_PASSWORD);
     }
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("com.currencyconverter.demo.models");
+        sessionFactory.setPackagesToScan(HIBERNATE_SET_PACKAGES_TO_SCAN);
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
@@ -39,7 +41,7 @@ public class HibernateConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName(HIBERNATE_SET_DRIVER_CLASS_NAME);
         dataSource.setUrl(dbUrl);
         dataSource.setUsername(dbUserName);
         dataSource.setPassword(dbPassword);
@@ -48,7 +50,7 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        hibernateProperties.setProperty(HIBERNATE_SET_PROPERTY_DIALECT, HIBERNATE_SET_PROPERTY_MYSQL_DIALECT);
         return hibernateProperties;
     }
 }

@@ -1,8 +1,9 @@
-package com.currencyconverter.demo.exceptions;
+package com.currencyconverter.demo.exceptions.implementations;
 
-public class BadParameterException extends RuntimeException {
+import static com.currencyconverter.demo.constants.ExceptionConstants.BAD_PARAMETER_EXCEPTION_HTTP_CODE;
+
+public class BadParameterException extends CustomExceptionImpl {
     private String message;
-    public static int ERROR_CODE = 400;
 
     public BadParameterException() {
     }
@@ -19,8 +20,8 @@ public class BadParameterException extends RuntimeException {
         this.message = message;
     }
 
-    public static int getErrorCode() {
-        return ERROR_CODE;
+    public int getErrorCode() {
+        return BAD_PARAMETER_EXCEPTION_HTTP_CODE;
     }
 
 }

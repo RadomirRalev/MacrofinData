@@ -8,6 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
+import static com.currencyconverter.demo.constants.ControllerConstants.HOME_CURRENCIES_LIST;
+import static com.currencyconverter.demo.constants.ControllerConstants.HOME_INDEX_PAGE_NAME;
+
 @Controller("/")
 public class HomeMVC {
     private CurrencyService currencyService;
@@ -20,7 +23,7 @@ public class HomeMVC {
     @GetMapping
     public String showHomePage(Model model) {
         List<Currency> currenciesList = currencyService.getAllCurrencies();
-        model.addAttribute("currenciesList", currenciesList);
-        return "index";
+        model.addAttribute(HOME_CURRENCIES_LIST, currenciesList);
+        return HOME_INDEX_PAGE_NAME;
     }
 }

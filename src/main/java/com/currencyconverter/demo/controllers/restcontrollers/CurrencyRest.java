@@ -10,11 +10,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 
-import static com.currencyconverter.demo.controllers.parameterValidityChecker.*;
+import static com.currencyconverter.demo.constants.ControllerConstants.REST_API_MAPPING;
+import static com.currencyconverter.demo.controllers.ParameterValidityChecker.*;
 
 @RestController
 @Validated
-@RequestMapping("api/currency")
+@RequestMapping(REST_API_MAPPING)
 public class CurrencyRest {
     private CurrencyService currencyService;
 
@@ -22,7 +23,7 @@ public class CurrencyRest {
         this.currencyService = currencyService;
     }
 
-    @GetMapping(value = "/getbyid/{id}", produces = "application/json")
+    @GetMapping("/getbyid/{id}")
     public Currency getById(@PathVariable("id") String id) {
         int idNumber = processIdPathVariable(id);
         try {
@@ -90,7 +91,7 @@ public class CurrencyRest {
         }
     }
 
-    @GetMapping(value = "/getcurrencytocurrencybycode", produces = "application/json")
+    @GetMapping("/getcurrencytocurrencybycode")
     public String getCurrencyToCurrencyByCode(@RequestParam String amount,
                                               @RequestParam String code1,
                                               @RequestParam String code2) {

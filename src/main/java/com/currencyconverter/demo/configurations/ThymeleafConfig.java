@@ -7,14 +7,16 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
+import static com.currencyconverter.demo.constants.ConfigurationConstants.*;
+
 
 @Configuration
 public class ThymeleafConfig {
     @Bean
     public SpringResourceTemplateResolver templateResolver(){
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setPrefix("classpath:templates/");
-        templateResolver.setSuffix(".html");
+        templateResolver.setPrefix(THYMELEAF_TEMPLATE_RESOLVER_SET_PREFIX);
+        templateResolver.setSuffix(THYMELEAF_TEMPLATE_RESOLVER_SET_SUFFIX);
         return templateResolver;
     }
 
@@ -29,7 +31,7 @@ public class ThymeleafConfig {
     @Bean public ThymeleafViewResolver viewResolver() {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
-        viewResolver.setOrder(1);
+        viewResolver.setOrder(THYMELEAF_VIEW_RESOLVER_SET_ORDER);
         return viewResolver;
     }
 
