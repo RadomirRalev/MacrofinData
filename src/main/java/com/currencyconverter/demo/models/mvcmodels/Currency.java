@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.models;
+package com.currencyconverter.demo.models.mvcmodels;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

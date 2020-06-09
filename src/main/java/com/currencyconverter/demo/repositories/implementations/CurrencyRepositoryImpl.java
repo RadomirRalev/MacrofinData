@@ -1,6 +1,6 @@
 package com.currencyconverter.demo.repositories.implementations;
 
-import com.currencyconverter.demo.models.Currency;
+import com.currencyconverter.demo.models.mvcmodels.Currency;
 import com.currencyconverter.demo.repositories.contracts.CurrencyRepository;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;

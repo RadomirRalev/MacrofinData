@@ -8,7 +8,7 @@ public class ApiConsumer {
 
     public static JSONObject getCurrencyExchangeDataFromApi() {
         RestTemplate restTemplate = new RestTemplate();
-        return new JSONObject(restTemplate.getForObject("https://sdw-wsrest.ecb.europa.eu/service/data/EXR/D..EUR.SP00.A?startPeriod=2020-05-06&endPeriod=2020-05-06", String.class));
+        return new JSONObject(restTemplate.getForObject(getTodayCurrencyRatesURI(), String.class));
     }
 }
 

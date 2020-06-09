@@ -1,7 +1,8 @@
 package com.currencyconverter.demo.api;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import static com.currencyconverter.demo.constants.ApiConstants.*;
 
@@ -20,9 +21,18 @@ public class QueryBuilder {
         return sb.toString();
     }
 
-    private static String formatTodayDate() {
+    public static String formatTodayDate() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATA_FORMAT_IN_URI_STRING);
-        LocalDateTime todayDate = LocalDateTime.now();
-        return dtf.format(todayDate);
+        if (LOCAL_TIME_TO_CET.isAfter(CURRENCY_RATE_UPDATE_TIME)) {
+            LocalDateTime todayDate = LocalDateTime.now();
+            return dtf.format(todayDate);
+        }
+        return dtf.format(getYesterdayDate());
+    }
+
+    private static LocalDateTime getYesterdayDate() {
+        Instant now = Instant.now();
+        Instant yesterday = now.minus(1, ChronoUnit.DAYS);
+        return LocalDateTime.ofInstant(yesterday, ZoneOffset.UTC);
     }
 }

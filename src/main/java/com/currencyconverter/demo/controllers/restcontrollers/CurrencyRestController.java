@@ -1,7 +1,9 @@
 package com.currencyconverter.demo.controllers.restcontrollers;
 
-import com.currencyconverter.demo.models.Currency;
-import com.currencyconverter.demo.services.contracts.CurrencyService;
+import com.currencyconverter.demo.models.mvcmodels.Currency;
+import com.currencyconverter.demo.models.restmodels.CurrencyRest;
+import com.currencyconverter.demo.services.mvcservices.contracts.CurrencyService;
+import com.currencyconverter.demo.services.restservices.contracts.CurrencyServiceRest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -10,17 +12,31 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 
+import java.util.List;
+import java.util.Map;
+
 import static com.currencyconverter.demo.constants.ControllerConstants.REST_API_MAPPING;
 import static com.currencyconverter.demo.controllers.ParameterValidityChecker.*;
 
 @RestController
 @Validated
 @RequestMapping(REST_API_MAPPING)
-public class CurrencyRest {
+public class CurrencyRestController {
     private CurrencyService currencyService;
+    private CurrencyServiceRest currencyServiceRest;
 
-    public CurrencyRest(CurrencyService currencyService) {
+    public CurrencyRestController(CurrencyService currencyService, CurrencyServiceRest currencyServiceRest) {
         this.currencyService = currencyService;
+        this.currencyServiceRest = currencyServiceRest;
+    }
+
+    @GetMapping(value = "/getallcurrencies", produces = "application/json")
+    public Map<String, List<com.currencyconverter.demo.models.restmodels.CurrencyRest>> getAllCurrencies() {
+        try {
+            return currencyServiceRest.getAllCurrencies();
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/getbyid/{id}")
@@ -34,10 +50,10 @@ public class CurrencyRest {
     }
 
     @GetMapping("/getbycode/{code}")
-    public Currency getByCode(@PathVariable String code) {
+    public Map<String, CurrencyRest> getByCode(@PathVariable String code) {
         checkIfCodePathVariableIsCorrect(code);
         try {
-            return currencyService.getByCode(code);
+            return currencyServiceRest.getByCode(code);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

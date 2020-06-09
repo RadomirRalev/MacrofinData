@@ -1,6 +1,6 @@
-package com.currencyconverter.demo.services.contracts;
+package com.currencyconverter.demo.services.mvcservices.contracts;
 
-import com.currencyconverter.demo.models.Currency;
+import com.currencyconverter.demo.models.mvcmodels.Currency;
 import java.util.List;
 
 public interface CurrencyService {

@@ -1,10 +1,9 @@
 package com.currencyconverter.demo.repositories.contracts;
 
-import com.currencyconverter.demo.models.Currency;
+import com.currencyconverter.demo.models.mvcmodels.Currency;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 public interface CurrencyRepository {
     Currency getById(int id);

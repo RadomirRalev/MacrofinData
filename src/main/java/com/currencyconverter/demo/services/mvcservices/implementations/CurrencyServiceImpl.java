@@ -1,8 +1,8 @@
-package com.currencyconverter.demo.services.implementations;
+package com.currencyconverter.demo.services.mvcservices.implementations;
 
-import com.currencyconverter.demo.models.Currency;
+import com.currencyconverter.demo.models.mvcmodels.Currency;
 import com.currencyconverter.demo.repositories.contracts.CurrencyRepository;
-import com.currencyconverter.demo.services.contracts.CurrencyService;
+import com.currencyconverter.demo.services.mvcservices.contracts.CurrencyService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

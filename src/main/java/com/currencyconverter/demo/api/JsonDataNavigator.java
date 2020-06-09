@@ -29,6 +29,11 @@ public class JsonDataNavigator {
         return jsonObjArr.getString(KEY_OF_CURRENCY_CODE_IN_OBJECT);
     }
 
+    public static String getCurrencyNameString(JSONArray values, int i) {
+        JSONObject jsonObjArr = new JSONObject(values.getJSONObject(i).toString());
+        return jsonObjArr.getString(KEY_OF_CURRENCY_NAME_IN_OBJECT);
+    }
+
     public static String getCurrencyExchangeRate(Map<Integer, JSONObject> jsonObjectHashMap, int i) {
         JSONObject objectContainingArrayOfRates = jsonObjectHashMap.get(i).getJSONObject(NAME_OF_OBJECT_CONTAINING_ARRAY_OF_EXCHANGE_RATES);
         JSONArray arr = objectContainingArrayOfRates.getJSONArray(KEY_OF_ARRAY_CONTAINING_EXCHANGE_RATES);
