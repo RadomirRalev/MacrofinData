@@ -14,5 +14,7 @@ public class ExceptionConstants {
 
     //404
     public static final String WRONG_URL_EXCEPTION_MESSAGE = "Wrong URL! Please check api documentation!";
+    public static final String NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES = "No such code exists in the list of ECB currencies! Please check api documentation!";
+
 
 }

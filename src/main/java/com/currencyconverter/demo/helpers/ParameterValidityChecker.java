@@ -1,6 +1,6 @@
-package com.currencyconverter.demo.controllers;
+package com.currencyconverter.demo.helpers;
 
-import com.currencyconverter.demo.exceptions.implementations.BadParameterException;
+import com.currencyconverter.demo.exceptions.BadParameterException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 

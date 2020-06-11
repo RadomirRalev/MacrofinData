@@ -1,6 +1,6 @@
-package com.currencyconverter.demo.models.restmodels;
+package com.currencyconverter.demo.models;
 
-public class CurrencyRest {
+public class Currency {
     private String code;
     private String value;
     private String currencyName;
