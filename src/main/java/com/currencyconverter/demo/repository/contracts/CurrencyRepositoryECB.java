@@ -1,21 +1,22 @@
-package com.currencyconverter.demo.services.contracts;
+package com.currencyconverter.demo.repository.contracts;
 
 import com.currencyconverter.demo.models.CurrencyCollection;
-import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-public interface CurrencyService {
+public interface CurrencyRepositoryECB extends CurrencyRepository {
+
     CurrencyCollection getAllCurrencies();
 
     CurrencyCollection getByCode(String codes);
 
     Map<String, Map<String, String>> getAvailableCurrencies();
 
-    CurrencyCollection getCurrenciesPerDate(String date);
+    CurrencyCollection getCurrenciesPerDate(LocalDate localDate);
 
-    List<CurrencyCollection> getTimeSeries(String from, String to, String page, String limit);
+    List<CurrencyCollection> getTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit);
 
     String getCurrencyToEuroByCode(String amount, String code);
 

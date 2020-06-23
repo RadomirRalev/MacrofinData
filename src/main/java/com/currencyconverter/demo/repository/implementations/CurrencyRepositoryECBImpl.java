@@ -1,6 +1,8 @@
 package com.currencyconverter.demo.repository.implementations;
 
-import com.currencyconverter.demo.exceptions.ResourceNotFoundException;
+import com.currencyconverter.demo.exceptions.client.BadParameterException;
+import com.currencyconverter.demo.exceptions.client.ResourceNotFoundException;
+import com.currencyconverter.demo.exceptions.server.BadGatewayException;
 import com.currencyconverter.demo.models.Currency;
 import com.currencyconverter.demo.models.CurrencyCollection;
 import com.currencyconverter.demo.repository.contracts.CurrencyRepositoryECB;
@@ -14,10 +16,12 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.currencyconverter.demo.helpers.DateFormatter.calculateEaster;
-import static com.currencyconverter.demo.helpers.DateFormatter.formatTodayDate;
+import static com.currencyconverter.demo.constants.ApiConstants.DATA_FOR_SINGLE_DAY;
+import static com.currencyconverter.demo.constants.ApiConstants.INDEX_OF_FIRST_DAY;
+import static com.currencyconverter.demo.constants.ControllerConstants.*;
+import static com.currencyconverter.demo.constants.ExceptionConstants.*;
+import static com.currencyconverter.demo.helpers.DateFormatter.*;
 import static com.currencyconverter.demo.repository.repositoryhelpers.ecb.EcbQueryBuilder.getCurrencyRatesURI;
-import static com.currencyconverter.demo.constants.ExceptionConstants.NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES;
 import static com.currencyconverter.demo.repository.repositoryhelpers.ecb.EcbDataProcessor.processKeysInCurrencyRateObject;
 import static com.currencyconverter.demo.helpers.ParameterValidityChecker.checkIfCodePathVariableIsCorrect;
 import static com.currencyconverter.demo.repository.repositoryhelpers.ecb.EcbJsonDataNavigator.*;
@@ -28,17 +32,29 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
     @Override
     public JSONObject getCurrencyExchangeData() {
         RestTemplate restTemplate = new RestTemplate();
-        return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(), String.class));
+        try {
+            return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(), String.class));
+        } catch (Exception e) {
+            throw new BadGatewayException(NO_CONNECTION_WITH_ECB_SERVER);
+        }
     }
 
     public JSONObject getCurrencyExchangeData(String date) {
         RestTemplate restTemplate = new RestTemplate();
-        return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(date), String.class));
+        try {
+            return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(date), String.class));
+        } catch (Exception e) {
+            throw new BadGatewayException(NO_CONNECTION_WITH_ECB_SERVER);
+        }
     }
 
     public JSONObject getCurrencyExchangeData(String from, String to) {
         RestTemplate restTemplate = new RestTemplate();
-        return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(from, to), String.class));
+        try {
+            return new JSONObject(restTemplate.getForObject(getCurrencyRatesURI(from, to), String.class));
+        } catch (Exception e) {
+            throw new BadGatewayException(NO_CONNECTION_WITH_ECB_SERVER);
+        }
     }
 
     @Override
@@ -46,15 +62,14 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         JSONObject currencyExchangeDataJson = getCurrencyExchangeData();
         JSONArray arrayOfCurrencyCodeObjects = getArrayOfCurrencyCodeObjects(currencyExchangeDataJson);
         String date = formatTodayDate();
-        int indexOfDay = 0;
-        return new CurrencyCollection(date, getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, indexOfDay));
+        return new CurrencyCollection(date, getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, DATA_FOR_SINGLE_DAY, DATA_FOR_SINGLE_DAY));
     }
 
     @Override
     public CurrencyCollection getByCode(String codes) {
         JSONObject currencyExchangeDataJson = getCurrencyExchangeData();
         JSONArray values = getArrayOfCurrencyCodeObjects(currencyExchangeDataJson);
-        List<Currency> listOfCurrencies = getListOfMultipleCurrenciesByCode(codes, values, currencyExchangeDataJson);
+        List<Currency> listOfCurrencies = getListOfMultipleCurrenciesByCode(codes, values, currencyExchangeDataJson, DATA_FOR_SINGLE_DAY);
         return new CurrencyCollection(formatTodayDate(), listOfCurrencies);
     }
 
@@ -64,10 +79,9 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         Map<String, Map<String, String>> resultMap = new HashMap<>();
         JSONObject currencyExchangeDataJson = getCurrencyExchangeData();
         JSONArray arrayOfCurrencyCodeObjects = getArrayOfCurrencyCodeObjects(currencyExchangeDataJson);
-        int indexOfDay = 0;
-        List<Currency> allCurrencies = getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, indexOfDay);
-        for (Currency allCurrency : allCurrencies) {
-            currenciesMap.put(allCurrency.getCode(), allCurrency.getCurrencyName());
+        List<Currency> allCurrencies = getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, DATA_FOR_SINGLE_DAY, DATA_FOR_SINGLE_DAY);
+        for (Currency currency : allCurrencies) {
+            currenciesMap.put(currency.getCode(), currency.getCurrencyName());
         }
         resultMap.put("currencies", currenciesMap);
         return resultMap;
@@ -77,23 +91,50 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
     public CurrencyCollection getCurrenciesPerDate(LocalDate localDate) {
         JSONObject currencyExchangeDataJson = getCurrencyExchangeData(localDate.toString());
         JSONArray arrayOfCurrencyCodeObjects = getArrayOfCurrencyCodeObjects(currencyExchangeDataJson);
-        int indexOfDay = 0;
-        return new CurrencyCollection(localDate.toString(), getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, indexOfDay));
+        return new CurrencyCollection(localDate.toString(), getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, DATA_FOR_SINGLE_DAY, DATA_FOR_SINGLE_DAY));
     }
 
     @Override
-    public List<CurrencyCollection> getTimeSeries(LocalDate localDateFrom, LocalDate localDateTo) {
+    public List<CurrencyCollection> getTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit) {
+        int numberOfActiveDaysInTimeSeries = calculateActiveDaysOfTimeRange(localDateFrom, localDateTo).get("Active days");
+        HashMap<String, LocalDate> mapOfPaginatedLocalDates = paginateTimeSeries(localDateFrom, localDateTo, page, limit);
+        localDateFrom = mapOfPaginatedLocalDates.get("Start date");
+        localDateTo = mapOfPaginatedLocalDates.get("End date");
         HashMap<Integer, LocalDate> mapOfEasterDays = getMapOfEasterDays(localDateFrom, localDateTo);
         JSONObject currencyExchangeDataJson = getCurrencyExchangeData(localDateFrom.toString(), localDateTo.toString());
         JSONArray arrayOfCurrencyCodeObjects = getArrayOfCurrencyCodeObjects(currencyExchangeDataJson);
         List<CurrencyCollection> currencyCollectionList = new ArrayList<>();
-        int indexOfDay = 0;
+        int indexOfDay = INDEX_OF_FIRST_DAY;
         while (localDateFrom.isBefore(localDateTo.plusDays(1))) {
-            currencyCollectionList.add(new CurrencyCollection(localDateFrom.toString(), getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, indexOfDay)));
+            currencyCollectionList.add(new CurrencyCollection(localDateFrom.toString(), getListOfAllCurrencies(arrayOfCurrencyCodeObjects, currencyExchangeDataJson, indexOfDay, numberOfActiveDaysInTimeSeries)));
             localDateFrom = localDateFrom.plusDays(1);
             indexOfDay = checkIfDayIndexShouldBeIncreased(localDateFrom, indexOfDay, mapOfEasterDays);
         }
         return currencyCollectionList;
+    }
+
+    private HashMap<String, LocalDate> paginateTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit) {
+        HashMap<String, LocalDate> mapOfLocalDatesPaginated = new HashMap<>();
+        if (page.equalsIgnoreCase(LAST_PAGE)) {
+            page = getLastPage(localDateFrom, localDateTo, limit);
+        }
+        localDateFrom = getLocalDatePaginated(localDateFrom, localDateTo, page, limit);
+        mapOfLocalDatesPaginated.put(START_DATE, localDateFrom);
+        LocalDate localDateToPaginated = localDateFrom.plusDays(Integer.parseInt(limit) - 1);
+        if (localDateToPaginated.isAfter(localDateTo)) {
+            mapOfLocalDatesPaginated.put(END_DATE, localDateTo);
+        } else {
+            mapOfLocalDatesPaginated.put(END_DATE, localDateToPaginated);
+        }
+        return mapOfLocalDatesPaginated;
+    }
+
+    private String getLastPage(LocalDate localDateFrom, LocalDate localDateTo, String limit) {
+        String page;
+        int totalNumberOfDaysInTimeSeries = calculateActiveDaysOfTimeRange(localDateFrom, localDateTo).get("Total days");
+        int pageInt = (totalNumberOfDaysInTimeSeries + Integer.parseInt(limit) - 1) / Integer.parseInt(limit);
+        page = Integer.toString(pageInt);
+        return page;
     }
 
     @Override
@@ -109,6 +150,16 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
     @Override
     public String getCurrencyToCurrencyByCode(String amount, String code1, String code2) {
         return null;
+    }
+
+    private LocalDate getLocalDatePaginated(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit) {
+        LocalDate localDateFromPaginated = localDateFrom.plusDays((Integer.parseInt(page) - 1) * Integer.parseInt(limit));
+        if (localDateFromPaginated.isAfter(localDateTo)) {
+            throw new BadParameterException(BAD_PARAMETER_PAGE_NUMBER_HIGHER_THAN_SELECTION);
+        } else {
+            localDateFrom = localDateFromPaginated;
+        }
+        return localDateFrom;
     }
 
     private HashMap<Integer, LocalDate> getMapOfEasterDays(LocalDate localDateFrom, LocalDate localDateTo) {
@@ -139,17 +190,17 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         return indexOfDay;
     }
 
-    private List<Currency> getListOfMultipleCurrenciesByCode(String codes, JSONArray values, JSONObject currencyExchangeDataJson) {
+    private List<Currency> getListOfMultipleCurrenciesByCode(String codes, JSONArray values, JSONObject currencyExchangeDataJson, int numberOfTimeSeriesDays) {
         String[] arrayOfCodes = codes.split(",");
         List<Currency> listOfCurrencies = new ArrayList<>();
         for (String code : arrayOfCodes) {
             checkIfCodePathVariableIsCorrect(code);
-            listOfCurrencies.add(getCurrencyRestObject(code, values, currencyExchangeDataJson));
+            listOfCurrencies.add(getCurrencyRestObject(code, values, currencyExchangeDataJson, numberOfTimeSeriesDays));
         }
         return listOfCurrencies;
     }
 
-    private static Currency getCurrencyRestObject(String code, JSONArray values, JSONObject currencyExchangeDataJson) {
+    private static Currency getCurrencyRestObject(String code, JSONArray values, JSONObject currencyExchangeDataJson, int numberOfTimeSeriesDays) {
         Currency currency1 = new Currency();
         if (getEuroIfCodeIsEur(code, currency1)) {
             return currency1;
@@ -157,7 +208,7 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         int index1 = getIndexOfSingleCurrency(code, values);
         currency1.setCode(code.toUpperCase());
         currency1.setCurrencyName(getCurrencyNameString(values, index1));
-        currency1.setValue(getSingleDailyExchangeRate(index1, currencyExchangeDataJson).get(0));
+        currency1.setValue(getSingleDailyExchangeRate(index1, currencyExchangeDataJson, numberOfTimeSeriesDays).get(0));
         return currency1;
     }
 
@@ -171,19 +222,20 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         return false;
     }
 
-    private static List<String> getSingleDailyExchangeRate(int index, JSONObject currencyExchangeDataJson) {
+    private static List<String> getSingleDailyExchangeRate(int index, JSONObject currencyExchangeDataJson, int numberOfTimeSeriesDays) {
         Map<Integer, JSONObject> jsonObjectHashMap = processKeysInCurrencyRateObject(currencyExchangeDataJson);
-        return getCurrencyExchangeRate(jsonObjectHashMap, index);
+        return getCurrencyExchangeRate(jsonObjectHashMap, index, numberOfTimeSeriesDays);
     }
 
-    private static ArrayList<ArrayList<String>> getListOfDailyExchangeRates(JSONObject currencyExchangeDataJson) {
+    private static ArrayList<ArrayList<String>> getListOfDailyExchangeRates(JSONObject currencyExchangeDataJson, int numberOfTimeSeriesDays) {
         Map<Integer, JSONObject> jsonObjectHashMap = processKeysInCurrencyRateObject(currencyExchangeDataJson);
         ArrayList<ArrayList<String>> arrOfRates = new ArrayList<>();
         for (int i = 0; i < jsonObjectHashMap.size(); i++) {
-            arrOfRates.add(getCurrencyExchangeRate(jsonObjectHashMap, i));
+            arrOfRates.add(getCurrencyExchangeRate(jsonObjectHashMap, i, numberOfTimeSeriesDays));
         }
         return arrOfRates;
     }
+
 
     private static ArrayList[] getCurrencyCodesAndNames(JSONArray arrayOfCurrencyCodeObjects) {
         ArrayList<String> currencyCodes = new ArrayList<>();
@@ -195,10 +247,10 @@ public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
         return new ArrayList[]{currencyCodes, currencyNames};
     }
 
-    private static List<Currency> getListOfAllCurrencies(JSONArray arrayOfCurrencyCodeObjects, JSONObject currencyExchangeDataJson, int indexOfDay) {
+    private static List<Currency> getListOfAllCurrencies(JSONArray arrayOfCurrencyCodeObjects, JSONObject currencyExchangeDataJson, int indexOfDay, int numberOfTimeSeriesDays) {
         List<Currency> codesAndRates = new ArrayList<>();
         ArrayList[] codes = getCurrencyCodesAndNames(arrayOfCurrencyCodeObjects);
-        ArrayList<ArrayList<String>> rates = getListOfDailyExchangeRates(currencyExchangeDataJson);
+        ArrayList<ArrayList<String>> rates = getListOfDailyExchangeRates(currencyExchangeDataJson, numberOfTimeSeriesDays);
         for (int i = 0; i < rates.size(); i++) {
             Currency currency = new Currency();
             currency.setCode(codes[0].get(i).toString());

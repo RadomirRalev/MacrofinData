@@ -31,4 +31,7 @@ public class ApiConstants {
     //Time constants
     public static final LocalTime CURRENCY_RATE_UPDATE_TIME = LocalTime.of(16, 30);
     public static final LocalTime LOCAL_TIME_TO_CET = LocalTime.now(ZoneId.of("CET"));
+    public static final int DATA_FOR_SINGLE_DAY = 0;
+    public static final int INDEX_OF_FIRST_DAY = 0;
+
 }

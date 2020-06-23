@@ -4,6 +4,7 @@ public class Currency {
     private String code;
     private String value;
     private String currencyName;
+    private String source;
 
     public String getCode() {
         return code;
@@ -27,5 +28,9 @@ public class Currency {
 
     public void setCurrencyName(String currencyName) {
         this.currencyName = currencyName;
+    }
+
+    public String getSource() {
+        return "European Central Bank";
     }
 }

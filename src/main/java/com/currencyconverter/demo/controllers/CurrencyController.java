@@ -1,7 +1,11 @@
 package com.currencyconverter.demo.controllers;
 
-import com.currencyconverter.demo.models.Currency;
+import com.currencyconverter.demo.CurrencyConverterStart;
+import com.currencyconverter.demo.helpers.ParameterValidityChecker;
+import com.currencyconverter.demo.models.CurrencyCollection;
 import com.currencyconverter.demo.services.contracts.CurrencyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,38 +24,61 @@ import static com.currencyconverter.demo.helpers.ParameterValidityChecker.*;
 @RequestMapping(REST_API_MAPPING)
 public class CurrencyController {
     private CurrencyService currencyService;
+    public Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
+
 
     public CurrencyController(CurrencyService currencyService) {
         this.currencyService = currencyService;
     }
 
-    @GetMapping(value = "/getallcurrencies")
-    public Map<String, List<Currency>> getAllCurrencies() {
+    @GetMapping("/newest")
+    public CurrencyCollection getLatestRates(@RequestParam(required = false) String codes) {
         try {
+            if (codes != null) {
+                return currencyService.getByCode(codes);
+            }
             return currencyService.getAllCurrencies();
         } catch (EntityNotFoundException e) {
+            logger.error("EntityNotFoundException at getLatestRates method in CurrencyController with codes" + " " + codes);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
-    @GetMapping("/getbycode/{code}")
-    public Map<String, Currency> getByCode(@PathVariable String code) {
-        checkIfCodePathVariableIsCorrect(code);
+    @GetMapping("/available-currencies")
+    public Map<String, Map<String, String>> getAvailableCurrencies() {
         try {
-            return currencyService.getByCode(code);
+            return currencyService.getAvailableCurrencies();
         } catch (EntityNotFoundException e) {
+            logger.error("EntityNotFoundException at getAvailableCurrencies method in CurrencyController");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
-    @GetMapping("/getpairbycode")
-    public Map<String, Currency[]> getPairByCode(@RequestParam String code1,
-                                                 @RequestParam String code2) {
-        checkIfCodePathVariableIsCorrect(code1);
-        checkIfCodePathVariableIsCorrect(code2);
+    @GetMapping("/historical")
+    public CurrencyCollection getCurrenciesPerDate(@RequestParam String date) {
         try {
-            return currencyService.getPairByCode(code1, code2);
+            return currencyService.getCurrenciesPerDate(date);
         } catch (EntityNotFoundException e) {
+            logger.error("EntityNotFoundException at getCurrenciesPerDate method in CurrencyController with date" + " - " + date);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/timeseries")
+    public List<CurrencyCollection> getTimeSeries(@RequestParam String from,
+                                                  @RequestParam String to,
+    @RequestParam(defaultValue = "1") String page,
+    @RequestParam(required = false) String limit) {
+        page = checkIfPageIsCorrect(page);
+        limit = checkIfLimitIsCorrect(limit);
+        try {
+            return currencyService.getTimeSeries(from, to, page, limit);
+        } catch (EntityNotFoundException e) {
+            logger.error("EntityNotFoundException at getTimeSeries method in CurrencyController with " +
+                    "dateFrom" + " - " + from + " " +
+                    "dateTo" + " - " + to + " " +
+                    "page" + " - " + page + " " +
+                    "limit" + " - " + limit);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }

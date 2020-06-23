@@ -1,20 +1,21 @@
-package com.currencyconverter.demo.exceptions;
+package com.currencyconverter.demo.exceptions.server;
 
+import com.currencyconverter.demo.exceptions.CustomException;
 import org.springframework.http.HttpStatus;
 
-import static com.currencyconverter.demo.constants.ExceptionConstants.BAD_PARAMETER_EXCEPTION_HTTP_CODE;
+import static com.currencyconverter.demo.constants.ExceptionConstants.NO_RESPONSE_EXCEPTION_HTTP_CODE;
 
-public class BadParameterException extends CustomException {
+public class BadGatewayException extends CustomException {
     private int errorCode;
     private String message;
     private HttpStatus status;
 
-    private BadParameterException() {
-        status = HttpStatus.BAD_REQUEST;
-        errorCode = BAD_PARAMETER_EXCEPTION_HTTP_CODE;
+    private BadGatewayException() {
+        status = HttpStatus.BAD_GATEWAY;
+        errorCode = NO_RESPONSE_EXCEPTION_HTTP_CODE;
     }
 
-    public BadParameterException(String message) {
+    public BadGatewayException(String message) {
         this();
         this.message = message;
     }

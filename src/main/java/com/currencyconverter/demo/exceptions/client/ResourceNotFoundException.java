@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.exceptions;
+package com.currencyconverter.demo.exceptions.client;
 import com.currencyconverter.demo.exceptions.CustomException;
 import org.springframework.http.HttpStatus;
 
