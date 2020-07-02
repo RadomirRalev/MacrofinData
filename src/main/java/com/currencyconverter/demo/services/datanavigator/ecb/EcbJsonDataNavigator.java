@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.repository.repositoryhelpers.ecb;
+package com.currencyconverter.demo.services.datanavigator.ecb;
 
 import com.currencyconverter.demo.exceptions.server.InternalServerErrorECB;
 import com.currencyconverter.demo.helpers.ParameterValidityChecker;
@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 import static com.currencyconverter.demo.constants.ApiConstants.*;
@@ -69,7 +71,7 @@ public class EcbJsonDataNavigator {
     }
 
     private static void addResultToList(int numberOfDaysInTimeSeries, JSONObject objectContainingArrayOfRates, int largestKey, ArrayList<String> resultList, int startingIndex) {
-        for (int j = 0; j <= numberOfDaysInTimeSeries; j++) {
+        for (int j = 0; j < numberOfDaysInTimeSeries; j++) {
             Integer keyOfRate = j;
             if (j < startingIndex || j > largestKey) {
                 resultList.add("Service unavailable");
@@ -77,7 +79,10 @@ public class EcbJsonDataNavigator {
                 try {
                     JSONArray arr = objectContainingArrayOfRates.getJSONArray(keyOfRate.toString());
                     Double rate = arr.getDouble(0);
-                    resultList.add(rate.toString());
+                    BigDecimal bd = BigDecimal.valueOf(rate);
+                    bd = bd.setScale(4, RoundingMode.HALF_UP);
+                    resultList.add(bd.toString());
+
                 } catch (Exception e) {
                     resultList.add("Service unavailable");
                 }

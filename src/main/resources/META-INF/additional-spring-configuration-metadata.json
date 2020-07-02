@@ -4,5 +4,10 @@
       "name": "database.url",
       "type": "java.lang.String",
       "description": "Description for database.url."
-  }
-] }
+    },
+    {
+      "name": "info.app.version",
+      "type": "java.lang.String",
+      "description": "Description for info.app.version."
+    }
+  ] }

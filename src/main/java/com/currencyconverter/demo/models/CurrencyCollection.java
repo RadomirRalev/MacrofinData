@@ -7,18 +7,13 @@ public class CurrencyCollection {
     private String date;
     private List<Currency> list;
 
-    private CurrencyCollection() {
-        base = "EUR";
-    }
 
     public CurrencyCollection(String date, List<Currency> list) {
-        this();
         this.date = date;
         this.list = list;
     }
 
     public CurrencyCollection(String date, List<Currency> list, String base) {
-        this();
         this.date = date;
         this.list = list;
         this.base = base;

@@ -53,6 +53,34 @@ public class DateFormatter {
         return LocalDate.of(year, n, p);
     }
 
+    public static HashMap<Integer, LocalDate> getMapOfEasterDays(LocalDate localDateFrom, LocalDate localDateTo) {
+        HashMap<Integer, LocalDate> mapOfEasterDays = new HashMap<>();
+        for (int i = localDateFrom.getYear(); i <= localDateTo.getYear(); i++) {
+            mapOfEasterDays.put(i, calculateEaster(i));
+        }
+        return mapOfEasterDays;
+    }
+
+    public static int checkIfDayIndexShouldBeIncreased(LocalDate localDateFrom, int indexOfDay, HashMap<Integer, LocalDate> mapOfEasterDays) {
+        if (!(localDateFrom.getDayOfWeek().equals(DayOfWeek.SUNDAY) || localDateFrom.getDayOfWeek().equals(DayOfWeek.SATURDAY))
+                && !(localDateFrom.getMonthValue() == 1 && localDateFrom.getDayOfMonth() == 1)
+                && !(localDateFrom.getMonthValue() == 5 && localDateFrom.getDayOfMonth() == 1)
+                && !(localDateFrom.getMonthValue() == 12 && localDateFrom.getDayOfMonth() == 25)
+                && !(localDateFrom.getMonthValue() == 12 && localDateFrom.getDayOfMonth() == 26)
+                && !(localDateFrom.getMonthValue() == 4)
+                && !(localDateFrom.getMonthValue() == 3)) {
+            indexOfDay++;
+        }
+        if (localDateFrom.getMonthValue() == 3 || localDateFrom.getMonthValue() == 4) {
+            if (!(localDateFrom.getDayOfWeek().equals(DayOfWeek.SUNDAY) || localDateFrom.getDayOfWeek().equals(DayOfWeek.SATURDAY))
+                    && !(localDateFrom.equals(mapOfEasterDays.get(localDateFrom.getYear()).plus(1, ChronoUnit.DAYS)))
+                    && !(localDateFrom.equals(mapOfEasterDays.get(localDateFrom.getYear()).minus(2, ChronoUnit.DAYS)))) {
+                indexOfDay++;
+            }
+        }
+        return indexOfDay;
+    }
+
     private static LocalDate adjustToTargetClosingDays(LocalDate localDate) {
         if (localDate.getMonthValue() == 1 && localDate.getDayOfMonth() == 1) {
             localDate = getDateBeforeTargetClosing(localDate);

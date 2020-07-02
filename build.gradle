@@ -31,12 +31,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.json/json
     compile group: 'org.json', name: 'json', version: '20190722'
 
-    //Thymeleaf
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.2.3.RELEASE'
-
-    // https://mvnrepository.com/artifact/com.github.mxab.thymeleaf.extras/thymeleaf-extras-data-attribute
-    compile group: 'com.github.mxab.thymeleaf.extras', name: 'thymeleaf-extras-data-attribute', version: '2.0.1'
+//    //Thymeleaf
+//    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.2.3.RELEASE'
+//
+//    // https://mvnrepository.com/artifact/com.github.mxab.thymeleaf.extras/thymeleaf-extras-data-attribute
+//    compile group: 'com.github.mxab.thymeleaf.extras', name: 'thymeleaf-extras-data-attribute', version: '2.0.1'
 
 }
 

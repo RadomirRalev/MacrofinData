@@ -8,5 +8,6 @@ public class CurrencyConverterStart {
 
     public static void main(String[] args) {
         SpringApplication.run(CurrencyConverterStart.class, args);
+
     }
 }

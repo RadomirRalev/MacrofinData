@@ -23,7 +23,8 @@ public class ApiConstants {
     public static final String DATA_FORMAT_IN_URI_STRING = "yyyy-MM-dd";
     public static final String URI_OF_ECB_DATA_BANK = "https://sdw-wsrest.ecb.europa.eu/service/data/";
     public static final String URI_OF_ECB_EXCHANGE_RATE_DATA = "EXR/";
-    public static final String URI_TO_GET_DATA_FOR_ALL_CURRENCIES = "D..EUR.SP00.A?";
+    public static final String URI_TO_GET_DATA_FOR_CURRENCIES = "D.";
+    public static final String URI_TO_GET_DATA_FOR_ALL_CURRENCIES = ".EUR.SP00.A?";
     public static final String URI_START_PERIOD = "startPeriod=";
     public static final String URI_END_PERIOD = "endPeriod=";
     public static final String URI_AND_OPERATOR = "&";

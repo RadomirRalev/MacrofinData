@@ -1,13 +1,14 @@
 package com.currencyconverter.demo.helpers;
 
-import com.currencyconverter.demo.controllers.CurrencyController;
 import com.currencyconverter.demo.exceptions.client.BadParameterException;
+import com.currencyconverter.demo.exceptions.client.UnprocessableEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static com.currencyconverter.demo.constants.ExceptionConstants.*;
 
@@ -42,15 +43,22 @@ public class ParameterValidityChecker {
             localDate = LocalDate.parse(date);
         } catch (Exception e) {
             logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
-            throw new BadParameterException(BAD_PARAMETER_WRONG_DATE_FORMAT);
+            throw new UnprocessableEntityException(BAD_PARAMETER_WRONG_DATE_FORMAT, date);
+        }
+        if (localDate.isAfter(LocalDate.now())) {
+            logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
+            throw new UnprocessableEntityException(INVALID_DATE_AFTER, date);
+        } else if (localDate.isBefore(LocalDate.of(1999, 1, 1))) {
+            logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
+            throw new UnprocessableEntityException(INVALID_DATE_BEFORE, date);
         }
         return localDate;
     }
 
     public static void checkIfFromDateIsBeforeToDate(LocalDate localDateFrom, LocalDate localDateTo) {
         if (localDateFrom.isAfter(localDateTo)) {
-            logger.warn(BAD_PARAMETER_FROM_DATE_AFTER_TO_DATE + " - " + localDateFrom.toString() + " is after " + localDateTo.toString());
-            throw new BadParameterException(BAD_PARAMETER_FROM_DATE_AFTER_TO_DATE);
+            logger.warn(INVALID_DATE_FROM_DATE_AFTER_TO_DATE + " - " + localDateFrom.toString() + " is after " + localDateTo.toString());
+            throw new UnprocessableEntityException(INVALID_DATE_FROM_DATE_AFTER_TO_DATE, localDateFrom.toString());
         }
     }
 
@@ -61,13 +69,13 @@ public class ParameterValidityChecker {
             try {
                 int limitNum = Integer.parseInt(limit);
                 if (limitNum > 100 || limitNum < 1) {
-                    logger.warn(BAD_PARAMETER_WRONG_LIMIT_NUMBER + " - " + limitNum);
-                    throw new BadParameterException(BAD_PARAMETER_WRONG_LIMIT_NUMBER);
+                    logger.warn(INVALID_LIMIT_NUMBER + " - " + limitNum);
+                    throw new UnprocessableEntityException(INVALID_LIMIT_NUMBER, limit);
                 }
                 return limit;
             } catch (Exception e) {
-                logger.warn(BAD_PARAMETER_PAGE_LIMIT_NUMBER + " - " + limit);
-                throw new BadParameterException(BAD_PARAMETER_WRONG_LIMIT_NUMBER);
+                logger.warn(INVALID_LIMIT_NUMBER + " - " + limit);
+                throw new UnprocessableEntityException(INVALID_LIMIT_NUMBER, limit);
             }
         }
     }
@@ -81,14 +89,22 @@ public class ParameterValidityChecker {
             try {
                 int pageNum = Integer.parseInt(page);
                 if (pageNum < 1) {
-                    logger.warn(BAD_PARAMETER_PAGE_LIMIT_NUMBER + " - " + pageNum);
-                    throw new BadParameterException(BAD_PARAMETER_PAGE_LIMIT_NUMBER);
+                    logger.warn(INVALID_PAGE_LIMIT_NUMBER + " - " + pageNum);
+                    throw new UnprocessableEntityException(INVALID_PAGE_LIMIT_NUMBER, page);
                 }
                 return page;
             } catch (Exception e) {
-                logger.warn(BAD_PARAMETER_PAGE_LIMIT_NUMBER + " - " + page);
-                throw new BadParameterException(BAD_PARAMETER_PAGE_LIMIT_NUMBER);
+                logger.warn(INVALID_PAGE_LIMIT_NUMBER + " - " + page);
+                throw new UnprocessableEntityException(INVALID_PAGE_LIMIT_NUMBER, page);
             }
+        }
+    }
+
+    public static void checkIfCurrencyIsCorrect(String base, Map<String, Map<String, String>> availableCurrencies) {
+        Map<String, String> currencyList = availableCurrencies.get("currencies");
+        if (!base.equalsIgnoreCase("eur") && !currencyList.containsKey(base.toUpperCase())) {
+            ParameterValidityChecker.logger.warn(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES + " " + base);
+            throw new UnprocessableEntityException(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES, base);
         }
     }
 }

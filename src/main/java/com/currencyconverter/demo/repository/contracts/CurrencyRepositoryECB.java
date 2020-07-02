@@ -1,26 +1,13 @@
 package com.currencyconverter.demo.repository.contracts;
 
-import com.currencyconverter.demo.models.CurrencyCollection;
+import org.json.JSONObject;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+public interface CurrencyRepositoryECB {
 
-public interface CurrencyRepositoryECB extends CurrencyRepository {
+    JSONObject getCurrencyExchangeData();
 
-    CurrencyCollection getAllCurrencies();
+    JSONObject getCurrencyExchangeData(String date);
 
-    CurrencyCollection getByCode(String codes);
+    JSONObject getCurrencyExchangeData(String from, String to);
 
-    Map<String, Map<String, String>> getAvailableCurrencies();
-
-    CurrencyCollection getCurrenciesPerDate(LocalDate localDate);
-
-    List<CurrencyCollection> getTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit);
-
-    String getCurrencyToEuroByCode(String amount, String code);
-
-    String getEuroToCurrencyByCode(String amount, String code);
-
-    String getCurrencyToCurrencyByCode(String amount, String code1, String code2);
 }
