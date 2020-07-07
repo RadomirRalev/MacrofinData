@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.currencyconverter.demo.constants.ExceptionConstants.*;
@@ -28,6 +29,20 @@ public class ParameterValidityChecker {
         }
     }
 
+    public static ArrayList<String> getListOfMultipleCurrencyCodes(String codes) {
+        ArrayList<String> listOfCurrencyCodes = new ArrayList<>();
+        if (!codes.equalsIgnoreCase("all")) {
+            String[] arrayOfCodes = codes.split(",");
+            for (String code : arrayOfCodes) {
+                checkIfCodePathVariableIsCorrect(code);
+                listOfCurrencyCodes.add(code.toUpperCase());
+            }
+        } else {
+            listOfCurrencyCodes.add("all");
+        }
+        return listOfCurrencyCodes;
+    }
+
     public static void checkIfAmountIsCorrect(@RequestParam String amount) {
         for (int i = 0; i < amount.length(); i++) {
             if ((amount.charAt(i) < 48 || amount.charAt(i) > 57) && amount.charAt(i) != 46) {
@@ -43,14 +58,14 @@ public class ParameterValidityChecker {
             localDate = LocalDate.parse(date);
         } catch (Exception e) {
             logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
-            throw new UnprocessableEntityException(BAD_PARAMETER_WRONG_DATE_FORMAT, date);
+            throw new BadParameterException(BAD_PARAMETER_WRONG_DATE_FORMAT);
         }
         if (localDate.isAfter(LocalDate.now())) {
             logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
-            throw new UnprocessableEntityException(INVALID_DATE_AFTER, date);
+            throw new BadParameterException(INVALID_DATE_AFTER);
         } else if (localDate.isBefore(LocalDate.of(1999, 1, 1))) {
             logger.warn(BAD_PARAMETER_WRONG_DATE_FORMAT + " - " + date);
-            throw new UnprocessableEntityException(INVALID_DATE_BEFORE, date);
+            throw new BadParameterException(INVALID_DATE_BEFORE);
         }
         return localDate;
     }
@@ -100,11 +115,11 @@ public class ParameterValidityChecker {
         }
     }
 
-    public static void checkIfCurrencyIsCorrect(String base, Map<String, Map<String, String>> availableCurrencies) {
+    public static void checkIfCurrencyIsCorrect(String code, Map<String, Map<String, String>> availableCurrencies) {
         Map<String, String> currencyList = availableCurrencies.get("currencies");
-        if (!base.equalsIgnoreCase("eur") && !currencyList.containsKey(base.toUpperCase())) {
-            ParameterValidityChecker.logger.warn(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES + " " + base);
-            throw new UnprocessableEntityException(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES, base);
+        if (!code.equalsIgnoreCase("eur") && !currencyList.containsKey(code.toUpperCase())) {
+            ParameterValidityChecker.logger.warn(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES + " " + code);
+            throw new UnprocessableEntityException(NO_SUCH_CODE_EXISTS_IN_THE_LIST_OF_ECB_CURRENCIES, code);
         }
     }
 }

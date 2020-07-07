@@ -1,12 +1,12 @@
-package com.currencyconverter.demo.repository.querybuilders.ecb;
+package com.currencyconverter.demo.repository.implementations.ecb;
 
 import static com.currencyconverter.demo.constants.ApiConstants.*;
 import static com.currencyconverter.demo.helpers.DateFormatter.formatDate;
 import static com.currencyconverter.demo.helpers.DateFormatter.formatTodayDate;
 
-public class EcbQueryBuilder {
+class EcbQueryBuilder {
 
-    public static String getCurrencyRatesURI() {
+    static String getCurrencyRatesURI() {
         StringBuilder sb = new StringBuilder();
         sb.append(URI_OF_ECB_DATA_BANK);
         sb.append(URI_OF_ECB_EXCHANGE_RATE_DATA);
@@ -19,7 +19,7 @@ public class EcbQueryBuilder {
         return sb.toString();
     }
 
-    public static String getCurrencyRatesURI(String date) {
+    static String getCurrencyRatesURI(String date) {
         StringBuilder sb = new StringBuilder();
         sb.append(URI_OF_ECB_DATA_BANK);
         sb.append(URI_OF_ECB_EXCHANGE_RATE_DATA);
@@ -32,7 +32,7 @@ public class EcbQueryBuilder {
         return sb.toString();
     }
 
-    public static String getCurrencyRatesURI(String from, String to) {
+    static String getCurrencyRatesURI(String from, String to) {
         StringBuilder sb = new StringBuilder();
         sb.append(URI_OF_ECB_DATA_BANK);
         sb.append(URI_OF_ECB_EXCHANGE_RATE_DATA);

@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.repository.contracts;
+package com.currencyconverter.demo.repository.contracts.ecb;
 
 import org.json.JSONObject;
 

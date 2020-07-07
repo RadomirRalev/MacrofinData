@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.services.datanavigator.ecb;
+package com.currencyconverter.demo.services.implementations.ecb;
 
 import com.currencyconverter.demo.exceptions.server.InternalServerErrorECB;
 import com.currencyconverter.demo.helpers.ParameterValidityChecker;
@@ -15,16 +15,16 @@ import java.util.*;
 import static com.currencyconverter.demo.constants.ApiConstants.*;
 import static com.currencyconverter.demo.constants.ExceptionConstants.*;
 
-public class EcbJsonDataNavigator {
-    public static Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
+class EcbJsonDataNavigator {
+    private static Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
 
-    public static JSONObject getObjectContainingNestedRateObjects(JSONObject currencyExchangeDataJson) {
+    static JSONObject getObjectContainingNestedRateObjects(JSONObject currencyExchangeDataJson) {
         JSONArray dataSets = getJsonArrayFromJsonObject(currencyExchangeDataJson, KEY_OF_CURRENCY_DATA_ARRAY);
         JSONObject objectContainingExchangeRateSeries = getJsonObjectFromJsonArray(dataSets, INDEX_OF_OBJECT_CONTAINING_EXCHANGE_RATE_SERIES);
         return getNestedJsonObject(objectContainingExchangeRateSeries, NAME_OF_OBJECT_CONTAINING_NESTED_EXCHANGE_RATE_OBJECTS);
     }
 
-    public static JSONArray getArrayOfCurrencyCodeObjects(JSONObject currencyExchangeDateJson) {
+    static JSONArray getArrayOfCurrencyCodeObjects(JSONObject currencyExchangeDateJson) {
         JSONObject structure = getNestedJsonObject(currencyExchangeDateJson, NAME_OF_OBJECT_CONTAINING_DESCRIPTION_OF_DATA);
         JSONObject attributes = getNestedJsonObject(structure, NAME_OF_OBJECT_CONTAINING_ATTRIBUTES_OF_DATA);
         JSONArray series = getJsonArrayFromJsonObject(attributes, KEY_OF_CURRENCY_CODES_ARRAY);
@@ -32,7 +32,7 @@ public class EcbJsonDataNavigator {
         return getJsonArrayFromJsonObject(objectInsideSeriesArray, KEY_OF_ARRAY_CONTAINING_THREE_LETTER_CURRENCY_CODE);
     }
 
-    public static String getCurrencyCodeString(JSONArray values, int i) {
+    static String getCurrencyCodeString(JSONArray values, int i) {
         if (values.isEmpty() || values.isNull(i)) {
             if (values.isNull(i)) {
                 logger.error(BAD_REQUEST_IN_JSON_FILE_NO_VALUES + i);
@@ -50,7 +50,7 @@ public class EcbJsonDataNavigator {
         }
     }
 
-    public static String getCurrencyNameString(JSONArray values, int i) {
+    static String getCurrencyNameString(JSONArray values, int i) {
         try {
             JSONObject jsonObjArr = new JSONObject(values.getJSONObject(i).toString());
             return jsonObjArr.getString(KEY_OF_CURRENCY_NAME_IN_OBJECT);
@@ -60,7 +60,7 @@ public class EcbJsonDataNavigator {
         }
     }
 
-    public static ArrayList<String> getCurrencyExchangeRate(Map<Integer, JSONObject> jsonObjectHashMap, int i, int numberOfDaysInTimeSeries) {
+    static ArrayList<String> getCurrencyExchangeRate(Map<Integer, JSONObject> jsonObjectHashMap, int i, int numberOfDaysInTimeSeries) {
         JSONObject objectContainingArrayOfRates = getObjectContainingArrayOfRates(jsonObjectHashMap, i);
         Integer key = getKeyOfExchangeRatesArray(jsonObjectHashMap, i);
         int largestKey = getLargestKey(jsonObjectHashMap, i);

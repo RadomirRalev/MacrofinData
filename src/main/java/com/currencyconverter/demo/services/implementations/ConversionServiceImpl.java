@@ -6,10 +6,13 @@ import com.currencyconverter.demo.services.contracts.ConversionService;
 import com.currencyconverter.demo.services.contracts.CurrencyService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.currencyconverter.demo.helpers.MoneyFormatter.formatSum;
 
 @Service
 public class ConversionServiceImpl implements ConversionService {
@@ -20,36 +23,40 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     @Override
-    public List<Conversion> convertByDate(String from, String to, LocalDate date, String amount) {
-        CurrencyCollection collection = currencyService.getByCode(to, from);
+    public List<Conversion> convertByDate(ArrayList<String> from, ArrayList<String> to, LocalDate date, String amount) {
+        CurrencyCollection collection = currencyService.getCurrenciesPerSingleDay(date, to, from.get(0));
         List<Conversion> resultList = new ArrayList<>();
-        HashMap<String, String> query = new HashMap<>();
-        query.put("from", from);
-        query.put("to", to);
-        query.put("amount", amount);
         String rate = collection.getList().get(0).getValue();
-        String dateOfConversion = date.toString();
-        double result = Double.parseDouble(rate)*Double.parseDouble(amount);
-        Conversion conversion = new Conversion(query, rate, dateOfConversion, Double.toString(result));
-        resultList.add(conversion);
+        String dateOfConversion = collection.getDate();
+        setConversionValue(from.get(0), to.get(0), amount, resultList, rate, dateOfConversion);
         return resultList;
     }
 
     @Override
-    public List<Conversion> convertByTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit, String from, String to, String amount) {
-        List<CurrencyCollection> collectionList = currencyService.getTimeSeries(localDateFrom, localDateTo, page, limit, from, to);
+    public List<Conversion> convertByTimeSeries(LocalDate localDateFrom, LocalDate localDateTo, String page, String limit, ArrayList<String> from, ArrayList<String> to, String amount) {
+        List<CurrencyCollection> collectionList = currencyService.getTimeSeries(localDateFrom, localDateTo, page, limit, from.get(0), to);
         List<Conversion> resultList = new ArrayList<>();
-        for (int i = 0; i < collectionList.size(); i++) {
-            HashMap<String, String> query = new HashMap<>();
-            query.put("from", from.toUpperCase());
-            query.put("to", to.toUpperCase());
-            query.put("amount", amount);
-            String rate = collectionList.get(i).getList().get(0).getValue();
-            String dateOfConversion = collectionList.get(i).getDate();
-            double result = Double.parseDouble(rate)*Double.parseDouble(amount);
-            Conversion conversion = new Conversion(query, rate, dateOfConversion, Double.toString(result));
-            resultList.add(conversion);
+        for (CurrencyCollection currencyCollection : collectionList) {
+            String rate = currencyCollection.getList().get(0).getValue();
+            String dateOfConversion = currencyCollection.getDate();
+            setConversionValue(from.get(0), to.get(0), amount, resultList, rate, dateOfConversion);
         }
         return resultList;
+    }
+
+    private static void setConversionValue(String from, String to, String amount, List<Conversion> resultList, String rate, String dateOfConversion) {
+        Conversion conversion;
+        HashMap<String, String> query = new HashMap<>();
+        query.put("from", from.toUpperCase());
+        query.put("to", to.toUpperCase());
+        query.put("amount", amount);
+        if (!rate.equalsIgnoreCase("service unavailable")) {
+            double result = Double.parseDouble(rate) * Double.parseDouble(amount);
+            BigDecimal bd = formatSum(result);
+            conversion = new Conversion(query, rate, dateOfConversion, bd.toString());
+        } else {
+            conversion = new Conversion(query, rate, dateOfConversion, rate);
+        }
+        resultList.add(conversion);
     }
 }

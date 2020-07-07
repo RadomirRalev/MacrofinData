@@ -1,4 +1,4 @@
-package com.currencyconverter.demo.services.datanavigator.ecb;
+package com.currencyconverter.demo.services.implementations.ecb;
 
 import org.json.JSONObject;
 
@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class EcbDataProcessor {
+class EcbDataProcessor {
     private static final int STARTING_INDEX_OF_TRIM_BEGINNING = 0;
     private static final int ENDING_INDEX_OF_TRIM_BEGINNING = 2;
     private static final int NUMBER_OF_INDICES_TO_BE_TRIMMED_ENDING = 8;
 
-    public static Map<Integer, JSONObject> processKeysInCurrencyRateObject(JSONObject currencyExchangeDataJson) {
+    static Map<Integer, JSONObject> processKeysInCurrencyRateObject(JSONObject currencyExchangeDataJson) {
         JSONObject series = EcbJsonDataNavigator.getObjectContainingNestedRateObjects(currencyExchangeDataJson);
         Map<Integer, JSONObject> jsonObjectHashMap = new TreeMap<>();
         Iterator key = series.keys();
@@ -26,7 +26,7 @@ public class EcbDataProcessor {
         return jsonObjectHashMap;
     }
 
-    public static Map<Integer, JSONObject> processKeysInCurrencyRateObject(JSONObject currencyExchangeDataJson, ArrayList<String> arrayOfIndexes) {
+    static Map<Integer, JSONObject> processKeysInCurrencyRateObject(JSONObject currencyExchangeDataJson, ArrayList<String> arrayOfIndexes) {
         JSONObject series = EcbJsonDataNavigator.getObjectContainingNestedRateObjects(currencyExchangeDataJson);
         Map<Integer, JSONObject> jsonObjectHashMap = new TreeMap<>();
         Iterator key = series.keys();

@@ -1,8 +1,8 @@
-package com.currencyconverter.demo.repository.implementations;
+package com.currencyconverter.demo.repository.implementations.ecb;
 
 import com.currencyconverter.demo.exceptions.server.BadGatewayException;
 import com.currencyconverter.demo.helpers.ParameterValidityChecker;
-import com.currencyconverter.demo.repository.contracts.CurrencyRepositoryECB;
+import com.currencyconverter.demo.repository.contracts.ecb.CurrencyRepositoryECB;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import static com.currencyconverter.demo.constants.ExceptionConstants.*;
-import static com.currencyconverter.demo.repository.querybuilders.ecb.EcbQueryBuilder.getCurrencyRatesURI;
+import static com.currencyconverter.demo.repository.implementations.ecb.EcbQueryBuilder.getCurrencyRatesURI;
 
 @Repository
 public class CurrencyRepositoryECBImpl implements CurrencyRepositoryECB {
-    public static Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
+    private static Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
 
     @Override
     public JSONObject getCurrencyExchangeData() {

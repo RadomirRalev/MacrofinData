@@ -14,9 +14,10 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    testCompile 'junit:junit:4.12'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+
     //Swagger
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
@@ -30,13 +31,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
     // https://mvnrepository.com/artifact/org.json/json
     compile group: 'org.json', name: 'json', version: '20190722'
-
-//    //Thymeleaf
-//    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
-//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.2.3.RELEASE'
-//
-//    // https://mvnrepository.com/artifact/com.github.mxab.thymeleaf.extras/thymeleaf-extras-data-attribute
-//    compile group: 'com.github.mxab.thymeleaf.extras', name: 'thymeleaf-extras-data-attribute', version: '2.0.1'
 
 }
 
