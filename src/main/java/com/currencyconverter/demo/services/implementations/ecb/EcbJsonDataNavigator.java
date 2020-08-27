@@ -15,7 +15,7 @@ import java.util.*;
 import static com.currencyconverter.demo.constants.ApiConstants.*;
 import static com.currencyconverter.demo.constants.ExceptionConstants.*;
 
-class EcbJsonDataNavigator {
+public class EcbJsonDataNavigator {
     private static Logger logger = LoggerFactory.getLogger(ParameterValidityChecker.class);
 
     static JSONObject getObjectContainingNestedRateObjects(JSONObject currencyExchangeDataJson) {

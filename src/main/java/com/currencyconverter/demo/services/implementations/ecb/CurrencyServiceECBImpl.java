@@ -1,17 +1,16 @@
 package com.currencyconverter.demo.services.implementations.ecb;
 
+import com.currencyconverter.demo.builders.implementations.CurrencyBuilderImpl;
 import com.currencyconverter.demo.exceptions.server.InternalServerErrorECB;
-import com.currencyconverter.demo.helpers.MultiThreadFactory;
 import com.currencyconverter.demo.models.Currency;
-import com.currencyconverter.demo.models.CurrencyCollection;
 import com.currencyconverter.demo.repository.contracts.ecb.CurrencyRepositoryECB;
+import com.currencyconverter.demo.builders.CurrencyBuildDirector;
 import com.currencyconverter.demo.services.contracts.ecb.CurrencyServiceECB;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -21,7 +20,6 @@ import static com.currencyconverter.demo.constants.ControllerConstants.END_DATE;
 import static com.currencyconverter.demo.helpers.DateFormatter.*;
 import static com.currencyconverter.demo.helpers.MoneyFormatter.formatSum;
 import static com.currencyconverter.demo.helpers.PaginateFactory.paginateTimeSeries;
-import static com.currencyconverter.demo.helpers.ParameterValidityChecker.*;
 import static com.currencyconverter.demo.services.implementations.ecb.EcbDataProcessor.processKeysInCurrencyRateObject;
 import static com.currencyconverter.demo.services.implementations.ecb.EcbJsonDataNavigator.*;
 
@@ -156,16 +154,24 @@ public class CurrencyServiceECBImpl implements CurrencyServiceECB {
         ArrayList<String>[] codeIndexesOfSelectedCurrencies;
         codeIndexesOfSelectedCurrencies = checkIfAllOrSpecificCodes(allCodes, listOfCurrencyCodes, values);
         ArrayList<ArrayList<String>> rates = getListOfDailyExchangeRates(currencyExchangeDataJson, numberOfTimeSeriesDays, allCodes[2], indexOfBase, codeIndexesOfSelectedCurrencies);
-            for (int i = 0; i < rates.size(); i++) {
-            Currency currency = new Currency();
+        for (int i = 0; i < rates.size(); i++) {
+            CurrencyBuilderImpl b = new CurrencyBuilderImpl();
+            CurrencyBuildDirector d = new CurrencyBuildDirector(b);
             try {
-                currency.setValue(rates.get(i).get(indexOfDay));
-                currency.setCode(codeIndexesOfSelectedCurrencies[0].get(i));
-                currency.setCurrencyName(codeIndexesOfSelectedCurrencies[1].get(i));
+            d.constructECBCurrency(rates.get(i).get(indexOfDay), codeIndexesOfSelectedCurrencies[0].get(i), codeIndexesOfSelectedCurrencies[1].get(i));
             } catch (Exception e) {
                 throw new InternalServerErrorECB("Cannot create currency!");
             }
-            codesAndRates.add(currency);
+            codesAndRates.add(b.getCurrency());
+//            Currency currency = new Currency();
+//            try {
+//                currency.setValue(rates.get(i).get(indexOfDay));
+//                currency.setCode(codeIndexesOfSelectedCurrencies[0].get(i));
+//                currency.setCurrencyName(codeIndexesOfSelectedCurrencies[1].get(i));
+//            } catch (Exception e) {
+//                throw new InternalServerErrorECB("Cannot create currency!");
+//            }
+//            codesAndRates.add(currency);
         }
         return codesAndRates;
     }

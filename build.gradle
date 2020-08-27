@@ -14,9 +14,12 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testCompile 'junit:junit:4.12'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-    }
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.3.3.RELEASE'
+
 
     //Swagger
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
@@ -25,15 +28,13 @@ dependencies {
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
-    //Hibernate
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'mysql:mysql-connector-java'
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
     // https://mvnrepository.com/artifact/org.json/json
     compile group: 'org.json', name: 'json', version: '20190722'
+    implementation 'junit:junit:4.12'
 
 }
 
 test {
     useJUnitPlatform()
 }
+

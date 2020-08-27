@@ -1,16 +1,13 @@
 package com.currencyconverter.demo.controllers;
 
 import com.currencyconverter.demo.exceptions.client.BadParameterException;
-import com.currencyconverter.demo.exceptions.client.ResourceNotFoundException;
 import com.currencyconverter.demo.exceptions.client.UnprocessableEntityException;
 import com.currencyconverter.demo.services.contracts.CurrencyService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class CurrencyControllerTests {
 
@@ -31,7 +27,7 @@ public class CurrencyControllerTests {
 
     @Test
     public void contextLoads() throws Exception {
-        Assert.assertNotNull(currencyController);
+        Assertions.assertNotNull(currencyController);
     }
 
     @Test
@@ -106,71 +102,85 @@ public class CurrencyControllerTests {
         Mockito.verify(currencyService, Mockito.times(1)).getCurrenciesPerSingleDay(LocalDate.now(), codes, base);
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenBaseDoesNotExist() {
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("BGN");
-        String base = "xxx";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Map<String, String> currency = new HashMap<>();
-        currency.put("DZD", "Algerian dinar");
-        availableCurrencies.put("currencies", currency);
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates(codes.get(0), base);
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            ArrayList<String> codes = new ArrayList<>();
+            codes.add("BGN");
+            String base = "xxx";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Map<String, String> currency = new HashMap<>();
+            currency.put("DZD", "Algerian dinar");
+            availableCurrencies.put("currencies", currency);
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates(codes.get(0), base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenBaseIsMalformattedNumberOfLettersMore() {
-        String base = "xxxx";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates("all", base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            String base = "xxxx";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates("all", base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenBaseIsMalformattedNumberOfLettersLess() {
-        String base = "xx";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates("all", base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            String base = "xx";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates("all", base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenBaseIsMalformattedNonLetterSymbol() {
-        String base = "x1x";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates("all", base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            String base = "x1x";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates("all", base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenCodeIsMalformattedNumberOfLettersMore() {
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("xxxx");
-        String base = "eur";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates(codes.get(0), base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            ArrayList<String> codes = new ArrayList<>();
+            codes.add("xxxx");
+            String base = "eur";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates(codes.get(0), base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenCodeIsMalformattedNumberOfLettersLess() {
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("xx");
-        String base = "eur";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates(codes.get(0), base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            ArrayList<String> codes = new ArrayList<>();
+            codes.add("xx");
+            String base = "eur";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates(codes.get(0), base);
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getLatestRatestThrowsExceptionWhenCodeIsMalformattedNonLetterSymbol() {
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("x1x");
-        String base = "eur";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getLatestRates(codes.get(0), base);
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            ArrayList<String> codes = new ArrayList<>();
+            codes.add("x1x");
+            String base = "eur";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getLatestRates(codes.get(0), base);
+        });
     }
 
     @Test
@@ -189,10 +199,12 @@ public class CurrencyControllerTests {
         Mockito.verify(currencyService, Mockito.times(1)).getCurrenciesPerSingleDay(LocalDate.now(), codes, base);
     }
 
-    @Test(expected = ResponseStatusException.class)
+    @Test
     public void getLatestRatestThrowsResponseStatusException() {
-        Mockito.when(currencyController.getLatestRates("all", "eur")).thenThrow(RuntimeException.class);
-        currencyController.getLatestRates("all", "eur");
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            Mockito.when(currencyController.getLatestRates("all", "eur")).thenThrow(RuntimeException.class);
+            currencyController.getLatestRates("all", "eur");
+        });
     }
 
     @Test
@@ -207,68 +219,88 @@ public class CurrencyControllerTests {
         Mockito.verify(currencyService, Mockito.times(1)).getAvailableCurrencies(true);
     }
 
-    @Test(expected = ResponseStatusException.class)
+    @Test
     public void getAvailableCurrenciesThrowsResponseStatusException() {
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenThrow(RuntimeException.class);
-        currencyController.getAvailableCurrencies(false);
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenThrow(RuntimeException.class);
+            currencyController.getAvailableCurrencies(false);
+        });
     }
 
-    //getCurrenciesPerDate
+    //    //getCurrenciesPerDate
 
-    @Test(expected = ResponseStatusException.class)
+    @Test
     public void getCurrenciesPerDateThrowsResponseStatusException() {
-        Mockito.when(currencyController.getCurrenciesPerDate("2020-05-12", "all", "eur")).thenThrow(RuntimeException.class);
-        currencyController.getCurrenciesPerDate("2020-05-12", "all", "eur");
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            Mockito.when(currencyController.getCurrenciesPerDate("2020-05-12", "all", "eur")).thenThrow(RuntimeException.class);
+            currencyController.getCurrenciesPerDate("2020-05-12", "all", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenDateFormatIncorrect() {
-        currencyController.getCurrenciesPerDate("2020-05-32", "all", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getCurrenciesPerDate("2020-05-32", "all", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenDateIsAfterToday() {
-        LocalDate localDate = LocalDate.now().plusDays(1);
-        currencyController.getCurrenciesPerDate(localDate.toString(), "all", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            LocalDate localDate = LocalDate.now().plusDays(1);
+            currencyController.getCurrenciesPerDate(localDate.toString(), "all", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenDateIsBefore1999() {
-        LocalDate localDate = LocalDate.of(1998, 12, 31);
-        currencyController.getCurrenciesPerDate(localDate.toString(), "all", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            LocalDate localDate = LocalDate.of(1998, 12, 31);
+            currencyController.getCurrenciesPerDate(localDate.toString(), "all", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenDateCannotBeParsed() {
-        currencyController.getCurrenciesPerDate("date", "all", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getCurrenciesPerDate("date", "all", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenBaseLessNumberOfSymbols() {
-        currencyController.getCurrenciesPerDate("2020-05-20", "all", "xx");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getCurrenciesPerDate("2020-05-20", "all", "xx");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenBaseMoreNumberOfSymbols() {
-        currencyController.getCurrenciesPerDate("2020-05-20", "all", "xxxx");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getCurrenciesPerDate("2020-05-20", "all", "xxxx");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getCurrenciesPerDateThrowsBadParameterExceptionWhenBaseUnvalidSymbols() {
-        currencyController.getCurrenciesPerDate("2020-05-20", "all", "xx1");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getCurrenciesPerDate("2020-05-20", "all", "xx1");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getCurrenciesPerDateThrowsExceptionWhenBaseDoesNotExist() {
-        ArrayList<String> codes = new ArrayList<>();
-        codes.add("BGN");
-        String base = "xxx";
-        Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
-        Map<String, String> currency = new HashMap<>();
-        currency.put("DZD", "Algerian dinar");
-        availableCurrencies.put("currencies", currency);
-        Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
-        currencyController.getCurrenciesPerDate("2020-05-20", "all", "xxx");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            ArrayList<String> codes = new ArrayList<>();
+            codes.add("BGN");
+            String base = "xxx";
+            Map<String, Map<String, String>> availableCurrencies = new TreeMap<>();
+            Map<String, String> currency = new HashMap<>();
+            currency.put("DZD", "Algerian dinar");
+            availableCurrencies.put("currencies", currency);
+            Mockito.when(currencyController.getAvailableCurrencies(false)).thenReturn(availableCurrencies);
+            currencyController.getCurrenciesPerDate("2020-05-20", "all", "xxx");
+        });
     }
 
     @Test
@@ -288,62 +320,84 @@ public class CurrencyControllerTests {
         Mockito.verify(currencyService, Mockito.times(1)).getCurrenciesPerSingleDay(date, codesResult, "DZD");
     }
 
-    //getTimeSeries
+//    //getTimeSeries
 
-    @Test(expected = ResponseStatusException.class)
+    @Test
     public void getTimeSeriesThrowsResponseStatusException() {
-        Mockito.when(currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "eur")).thenThrow(RuntimeException.class);
-        currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "eur");
+        Assertions.assertThrows(ResponseStatusException.class, () -> {
+            Mockito.when(currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "eur")).thenThrow(RuntimeException.class);
+            currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getTimeSeriesThrowsBadParameterExceptionWhenDateFormatIncorrectStart() {
-        currencyController.getTimeSeries("all", "2018-05-32", "2020-05-12", "1", "15", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getTimeSeries("all", "2018-05-32", "2020-05-12", "1", "15", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getTimeSeriesThrowsBadParameterExceptionWhenDateFormatIncorrectEnd() {
-        currencyController.getTimeSeries("all", "2018-05-12", "2020-05-32", "1", "15", "eur");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getTimeSeries("all", "2018-05-12", "2020-05-32", "1", "15", "eur");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getTimeSeriesThrowsUnprocessableEntityExceptionWhenEndIsBeforeStart() {
-        currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "15", "eur");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "15", "eur");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getTimeSeriesThrowsUnprocessableEntityExceptionWhenPageIsNegative() {
-        currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "-1", "15", "eur");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "-1", "15", "eur");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getTimeSeriesThrowsUnprocessableEntityExceptionWhenPageNotNumber() {
-        currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "x", "15", "eur");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "x", "15", "eur");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getTimeSeriesThrowsUnprocessableEntityExceptionWhenLimitNotNumber() {
-        currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "x", "eur");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "x", "eur");
+        });
     }
 
-    @Test(expected = UnprocessableEntityException.class)
+    @Test
     public void getTimeSeriesThrowsUnprocessableEntityExceptionWhenLimitIsNegative() {
-        currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "-15", "eur");
+        Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            currencyController.getTimeSeries("all", "2020-05-12", "2018-05-12", "1", "-15", "eur");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getTimeSeriesThrowsBadParameterExceptionWhenBaseLessNumberOfSymbols() {
+        Assertions.assertThrows(BadParameterException.class, () -> {
         currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "eu");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getTimeSeriesThrowsBadParameterExceptionWhenBaseMoreNumberOfSymbols() {
-        currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "euro");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "euro");
+        });
     }
 
-    @Test(expected = BadParameterException.class)
+    @Test
     public void getTimeSeriesThrowsBadParameterExceptionWhenBaseUnvalidSymbols() {
-        currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "x1x");
+        Assertions.assertThrows(BadParameterException.class, () -> {
+            currencyController.getTimeSeries("all", "2018-05-12", "2020-05-12", "1", "15", "x1x");
+        });
     }
 
     @Test
@@ -363,4 +417,5 @@ public class CurrencyControllerTests {
         currencyController.getTimeSeries("bgn,usd,czk", "2018-05-12", "2020-05-12", "1", "15", "eur");
         Mockito.verify(currencyService, Mockito.times(1)).getTimeSeries(start, end, "1", "15", "eur", codesResult);
     }
+
 }
