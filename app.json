@@ -1,0 +1,6 @@
+{
+  "name": "MacrofinData",
+  "description": "Offers different types of macroeconomic data in JSON format",
+  "repository": "https://github.com/RadomirRalev/MacrofinData",
+  "keywords": ["java", "spring", "static"]
+}
