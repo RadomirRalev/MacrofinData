@@ -260,3 +260,15 @@ Possible Errors:
 | 500 | Internal server error  |
 | 502 | No connection with ECB server   |
 
+## Author
+
+My name is Radomir Ralev, I am based in Sofia, Bulgaria. This is my first open source project. Programming has become my hobby in the past year or so as I'm deeply convinced that computers should be used to make our lives easier and their development is a huge step forward for the entire humanity. I hope the project will be useful for the community!
+
+If you wish to contact me, you can drop me an [email](rado_ralev@yahoo.com), or check my [LinkedIn](https://www.linkedin.com/in/radomir-ralev-02371b13/) profile.
+
+Happy programming!
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
