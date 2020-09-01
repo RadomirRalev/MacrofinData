@@ -1,4 +1,4 @@
-# MacroFinData
+# MacrofinData
 
 MacroFinData API is free and will be gradually expanded to offer different types of macroeconomic data in JSON format. 
 
