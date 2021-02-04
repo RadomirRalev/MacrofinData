@@ -5,6 +5,7 @@ import com.currencyconverter.demo.services.contracts.ConversionService;
 import com.currencyconverter.demo.services.contracts.CurrencyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +31,7 @@ public class ConverterController {
         this.currencyService = currencyService;
     }
 
+    @CrossOrigin
     @GetMapping("/converter/timeseries")
     public List<Conversion> getCurrencyConverterTimeSeries(@RequestParam(defaultValue = "eur") String from,
                                                            @RequestParam(defaultValue = "eur") String to,
@@ -53,6 +55,7 @@ public class ConverterController {
         return conversionService.convertByTimeSeries(localDateFrom, localDateTo, page, limit, fromArr, toArr, amount);
     }
 
+    @CrossOrigin
     @GetMapping("/converter")
     public List<Conversion> getCurrencyConverter(@RequestParam(defaultValue = "eur") String from,
                                                  @RequestParam(defaultValue = "eur") String to,

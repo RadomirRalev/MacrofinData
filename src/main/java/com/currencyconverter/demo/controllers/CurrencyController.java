@@ -19,6 +19,7 @@ import java.util.Map;
 import static com.currencyconverter.demo.constants.ControllerConstants.REST_API_MAPPING;
 import static com.currencyconverter.demo.helpers.ParameterValidityChecker.*;
 
+@CrossOrigin
 @RestController
 @Validated
 @RequestMapping(REST_API_MAPPING)
@@ -31,6 +32,7 @@ public class CurrencyController {
         this.currencyService = currencyService;
     }
 
+    @CrossOrigin
     @GetMapping("/newest")
     public CurrencyCollection getLatestRates(@RequestParam(required = false, defaultValue = "all") String codes,
                                              @RequestParam(required = false, defaultValue = "eur") String base) {
@@ -44,6 +46,7 @@ public class CurrencyController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/available-currencies")
     public Map<String, Map<String, String>> getAvailableCurrencies(@RequestParam(required = false, defaultValue = "false") boolean ever) {
         try {
@@ -54,6 +57,7 @@ public class CurrencyController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/history")
     public CurrencyCollection getCurrenciesPerDate(@RequestParam(required = false) String date,
                                                    @RequestParam(required = false, defaultValue = "all") String codes,
@@ -69,6 +73,7 @@ public class CurrencyController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/timeseries")
     public List<CurrencyCollection> getTimeSeries(@RequestParam(defaultValue = "all", required = false) String codes,
                                                   @RequestParam String start,
@@ -95,6 +100,7 @@ public class CurrencyController {
         }
     }
 
+    @CrossOrigin
     private void checkIfBaseIsCorrect(@RequestParam(required = false, defaultValue = "eur") String base) {
         if (!base.equalsIgnoreCase("eur")) {
             checkIfCodePathVariableIsCorrect(base);
